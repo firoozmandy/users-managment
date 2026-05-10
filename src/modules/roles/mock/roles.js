@@ -1,0 +1,12 @@
+    export const initialRoles = [
+    {
+        id: 1,
+        name: "Admin",
+        permissions: [1, 2, 3, 4]
+    },
+    {
+        id: 2,
+        name: "Viewer",
+        permissions: [1]
+    }
+    ];

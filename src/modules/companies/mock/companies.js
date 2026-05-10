@@ -1,0 +1,5 @@
+export const initialCompanies = [
+  { id: 1, name: "Alpha" },
+  { id: 2, name: "Beta" },
+
+];
