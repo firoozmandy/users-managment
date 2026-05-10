@@ -41,6 +41,9 @@ export default function AppLayout({ children }) {
           <Menu.Item key="6">
             <Link to="/permissions">Permissions</Link>
           </Menu.Item>
+          <Menu.Item key="7">
+            <Link to="/access-viewer">AccessViewer</Link>
+          </Menu.Item>
         </Menu>
       </Sider>
 

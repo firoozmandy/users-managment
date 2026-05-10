@@ -7,6 +7,7 @@ import PagesPage from "./modules/pages/view/PagesPage";
 import SystemPage from "./modules/systems/view/SystemPage";
 import CompaniesPage from "./modules/companies/view/CompaniesPage";
 import PermissionsPage from "./modules/permissions/view/permissionsPage";
+import AccessViewerPage from "./modules/users/view/AccessViewerPage";
 
 function App() {
   return (
@@ -18,6 +19,8 @@ function App() {
         <Route path="/systems" element={<SystemPage />} />
         <Route path="/pages" element={<PagesPage />} />
         <Route path="/permissions" element={<PermissionsPage/>} />
+        <Route path="/access-viewer" element={<AccessViewerPage/>} />
+
       </Routes>
     </AppLayout>
   );
