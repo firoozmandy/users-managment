@@ -6,8 +6,8 @@ import RolesPage from "./modules/roles/view/RolesPage";
 import PagesPage from "./modules/pages/view/PagesPage";
 import SystemPage from "./modules/systems/view/SystemPage";
 import CompaniesPage from "./modules/companies/view/CompaniesPage";
-import PermissionsPage from "./modules/permissions/view/permissionsPage";
 import AccessViewerPage from "./modules/users/view/AccessViewerPage";
+import PermissionsPage from "./modules/permissions/view/PermissionsPage";
 
 function App() {
   return (

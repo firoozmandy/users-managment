@@ -1,65 +1,65 @@
-import { useState } from "react";
-import { Table, Button, Modal, Form, Input, Space, Select } from "antd";
+import { useState } from 'react'
+import { Table, Button, Modal, Form, Input, Space, Select, Card } from 'antd'
 
-import { initialPages } from "../mock/pages";
-import PagePresenter from "../presenter/PagePresenter";
-import { initialSystems } from "../../systems/mock/system";
+import { initialPages } from '../mock/pages'
+import PagePresenter from '../presenter/PagePresenter'
+import { initialSystems } from '../../systems/mock/system'
 
 export default function PagesPage() {
-  const [pages, setPages] = useState(initialPages);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingPage, setEditingPage] = useState(null);
+  const [pages, setPages] = useState(initialPages)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingPage, setEditingPage] = useState(null)
 
-  const [form] = Form.useForm();
+  const [form] = Form.useForm()
 
-  const presenter = PagePresenter(pages, setPages);
+  const presenter = PagePresenter(pages, setPages)
 
   const openAddModal = () => {
-    setEditingPage(null);
-    form.resetFields();
-    setIsModalOpen(true);
-  };
+    setEditingPage(null)
+    form.resetFields()
+    setIsModalOpen(true)
+  }
 
   const openEditModal = (page) => {
-    setEditingPage(page);
-    form.setFieldsValue(page);
-    setIsModalOpen(true);
-  };
+    setEditingPage(page)
+    form.setFieldsValue(page)
+    setIsModalOpen(true)
+  }
 
   const handleSubmit = (values) => {
     if (editingPage) {
       presenter.updatePage({
         ...editingPage,
         ...values,
-      });
+      })
     } else {
-      presenter.addPage(values);
+      presenter.addPage(values)
     }
 
-    setIsModalOpen(false);
-    form.resetFields();
-  };
+    setIsModalOpen(false)
+    form.resetFields()
+  }
 
   const getSystemName = (systemId) => {
-    const system = initialSystems.find((s) => s.id === systemId);
-    return system ? system.name : "Unknown";
-  };
+    const system = initialSystems.find((s) => s.id === systemId)
+    return system ? system.name : 'Unknown'
+  }
 
   const columns = [
     {
-      title: "ID",
-      dataIndex: "id",
+      title: 'ID',
+      dataIndex: 'id',
     },
     {
-      title: "Page Name",
-      dataIndex: "name",
+      title: 'Page Name',
+      dataIndex: 'name',
     },
     {
-      title: "System",
+      title: 'System',
       render: (_, record) => getSystemName(record.systemId),
     },
     {
-      title: "Actions",
+      title: 'Actions',
       render: (_, record) => (
         <Space>
           <Button onClick={() => openEditModal(record)}>Edit</Button>
@@ -70,7 +70,7 @@ export default function PagesPage() {
         </Space>
       ),
     },
-  ];
+  ]
 
   return (
     <>
@@ -81,22 +81,28 @@ export default function PagesPage() {
       >
         Add Page
       </Button>
-
-      <Table dataSource={pages} columns={columns} rowKey="id" />
-
+      <Card title="Companies">
+        <Table
+          dataSource={pages}
+          columns={columns}
+          rowKey="id"
+          scroll={{ x: 800 }}
+        />
+      </Card>
       <Modal
-        title={editingPage ? "Edit Page" : "Add Page"}
+        width={window.innerWidth < 768 ? '95%' : 700}
+        title={editingPage ? 'Edit Page' : 'Add Page'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={null}
       >
-        <Form form={form} onFinish={handleSubmit}>
+        <Form form={form} onFinish={handleSubmit} layout="vertical">
           <Form.Item
             name="name"
             rules={[
               {
                 required: true,
-                message: "Enter page name",
+                message: 'Enter page name',
               },
             ]}
           >
@@ -108,7 +114,7 @@ export default function PagesPage() {
             rules={[
               {
                 required: true,
-                message: "Select system",
+                message: 'Select system',
               },
             ]}
           >
@@ -127,5 +133,5 @@ export default function PagesPage() {
         </Form>
       </Modal>
     </>
-  );
+  )
 }

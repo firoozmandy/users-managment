@@ -1,55 +1,55 @@
-import { useState } from "react";
-import { initialSystems } from "../mock/system";
-import { Button, Form, Input, Modal, Space, Table } from "antd";
-import SystemPresenter from "../presenter/SystemPresenter";
+import { useState } from 'react'
+import { initialSystems } from '../mock/system'
+import { Button, Card, Form, Input, Modal, Space, Table } from 'antd'
+import SystemPresenter from '../presenter/SystemPresenter'
 
 export default function SystemsPage() {
-  const [systems, setSystems] = useState(initialSystems);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingSystem, setEditingSystem] = useState(null);
+  const [systems, setSystems] = useState(initialSystems)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingSystem, setEditingSystem] = useState(null)
 
-  const [form] = Form.useForm();
+  const [form] = Form.useForm()
 
-  const presenter = SystemPresenter(systems, setSystems);
+  const presenter = SystemPresenter(systems, setSystems)
 
   const openAddModal = () => {
-    setEditingSystem(null);
-    form.resetFields();
-    setIsModalOpen(true);
-  };
+    setEditingSystem(null)
+    form.resetFields()
+    setIsModalOpen(true)
+  }
 
   const openEditModal = (system) => {
-    setEditingSystem(system);
-    form.setFieldsValue(system);
-    setIsModalOpen(true);
-  };
+    setEditingSystem(system)
+    form.setFieldsValue(system)
+    setIsModalOpen(true)
+  }
 
   const handleSubmit = (values) => {
     if (editingSystem) {
       presenter.updateSystem({
         ...editingSystem,
         ...values,
-      });
+      })
     } else {
-      presenter.addSystem(values);
+      presenter.addSystem(values)
     }
 
-    setIsModalOpen(false);
-    form.resetFields();
-  };
+    setIsModalOpen(false)
+    form.resetFields()
+  }
 
   const columns = [
     {
-      title: "ID",
-      dataIndex: "id",
+      title: 'ID',
+      dataIndex: 'id',
       render: (id) => id,
     },
     {
-      title: "System Name",
-      dataIndex: "name",
+      title: 'System Name',
+      dataIndex: 'name',
     },
     {
-      title: "Actions",
+      title: 'Actions',
       render: (_, record) => (
         <Space>
           <Button onClick={() => openEditModal(record)}>Edit</Button>
@@ -60,7 +60,7 @@ export default function SystemsPage() {
         </Space>
       ),
     },
-  ];
+  ]
 
   return (
     <>
@@ -71,22 +71,28 @@ export default function SystemsPage() {
       >
         Add System
       </Button>
-
-      <Table dataSource={systems} columns={columns} rowKey="id" />
-
+      <Card title="Companies">
+        <Table
+          dataSource={systems}
+          columns={columns}
+          rowKey="id"
+          scroll={{ x: 800 }}
+        />
+      </Card>
       <Modal
-        title={editingSystem ? "Edit System" : "Add System"}
+        width={window.innerWidth < 768 ? '95%' : 700}
+        title={editingSystem ? 'Edit System' : 'Add System'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={null}
       >
-        <Form form={form} onFinish={handleSubmit}>
+        <Form form={form} onFinish={handleSubmit} layout="vertical">
           <Form.Item
             name="name"
             rules={[
               {
                 required: true,
-                message: "Enter system name",
+                message: 'Enter system name',
               },
             ]}
           >
@@ -99,5 +105,5 @@ export default function SystemsPage() {
         </Form>
       </Modal>
     </>
-  );
+  )
 }

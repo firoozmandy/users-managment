@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Table, Button, Modal, Form, Select, Space } from 'antd'
+import { Table, Button, Modal, Form, Select, Space, Card } from 'antd'
 
 import { initialPermissions } from '../mock/permissions'
 import { initialPages } from '../../pages/mock/pages'
@@ -80,16 +80,22 @@ export default function PermissionsPage() {
       >
         Add Permission
       </Button>
-
-      <Table dataSource={permissions} columns={columns} rowKey="id" />
-
+      <Card title="Companies">
+        <Table
+          dataSource={permissions}
+          columns={columns}
+          rowKey="id"
+          scroll={{ x: 800 }}
+        />
+      </Card>
       <Modal
+        width={window.innerWidth < 768 ? '95%' : 700}
         title={editingPermission ? 'Edit Permission' : 'Add Permission'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={null}
       >
-        <Form form={form} onFinish={handleSubmit}>
+        <Form form={form} onFinish={handleSubmit} layout="vertical">
           <Form.Item
             name="pageId"
             rules={[

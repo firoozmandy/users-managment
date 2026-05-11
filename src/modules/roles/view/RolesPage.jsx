@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Table, Button, Modal, Form, Input, Checkbox, Space } from 'antd'
+import { Table, Button, Modal, Form, Input, Checkbox, Space, Card } from 'antd'
 import { initialRoles } from '../mock/roles'
 import RolePresenter from '../presenter/RolPresenter'
 import { initialPages } from '../../pages/mock/pages'
@@ -82,17 +82,23 @@ export default function RolesPage() {
       >
         Add Role
       </Button>
-
-      <Table dataSource={roles} columns={columns} rowKey="id" />
-
+      <Card title="Companies">
+        <Table
+          dataSource={roles}
+          columns={columns}
+          rowKey="id"
+          scroll={{ x: 800 }}
+        />
+      </Card>
       <Modal
+        width={window.innerWidth < 768 ? '95%' : 700}
         title={editingRole ? 'Edit Role' : 'Add Role'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={null}
-        width={700}
+        
       >
-        <Form form={form} onFinish={handleSubmit}>
+        <Form form={form} onFinish={handleSubmit} layout="vertical">
           <Form.Item
             name="name"
             rules={[

@@ -1,17 +1,21 @@
-import { Layout, Menu } from "antd";
-import { Link } from "react-router-dom";
+import { Avatar, Layout, Menu, Space } from 'antd'
+import Text from 'antd/es/typography/Text'
+import Title from 'antd/es/typography/Title'
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
-const { Header, Sider, Content } = Layout;
+const { Header, Sider, Content } = Layout
 
 export default function AppLayout({ children }) {
+  const [collapsed, setCollapsed] = useState(false)
   return (
-    <Layout style={{ minHeight: "100vh" }}>
-      <Sider>
+    <Layout style={{ minHeight: '100vh', background: '#f5f7fa' }}>
+      <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed}>
         <div
           style={{
-            color: "white",
-            padding: "16px",
-            fontSize: "18px",
+            color: 'white',
+            padding: '16px',
+            fontSize: '18px',
           }}
         >
           Admin Panel
@@ -48,12 +52,28 @@ export default function AppLayout({ children }) {
       </Sider>
 
       <Layout>
-        <Header style={{ background: "#fff" }}>User Management</Header>
+        <Header
+          style={{
+            background: '#fff',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '0 24px',
+          }}
+        >
+          <Title level={4} style={{ margin: 0 }}>
+            User Management Dashboard
+          </Title>
 
-        <Content style={{ margin: "16px", padding: "24px" }}>
+          <Space>
+            <Text>Admin</Text>
+            <Avatar>A</Avatar>
+          </Space>
+        </Header>
+        <Content style={{ margin: '16px', padding: '24px' }}>
           {children}
         </Content>
       </Layout>
     </Layout>
-  );
+  )
 }

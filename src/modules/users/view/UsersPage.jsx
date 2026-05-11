@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Table, Button, Modal, Form, Input, Select, Space } from 'antd'
+import { Table, Button, Modal, Form, Input, Select, Space, Card } from 'antd'
 
 import { initialUsers } from '../mock/users'
 import { initialCompanies } from '../../companies/mock/companies'
@@ -96,16 +96,22 @@ export default function UsersPage() {
       >
         Add User
       </Button>
-
-      <Table dataSource={users} columns={columns} rowKey="id" />
-
+      <Card title="Companies">
+        <Table
+          dataSource={users}
+          columns={columns}
+          rowKey="id"
+          scroll={{ x: 800 }}
+        />
+      </Card>
       <Modal
+        width={window.innerWidth < 768 ? '95%' : 700}
         title={editingUser ? 'Edit User' : 'Add User'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={null}
       >
-        <Form form={form} onFinish={handleSubmit}>
+        <Form form={form} onFinish={handleSubmit} layout="vertical">
           <Form.Item
             name="name"
             rules={[
