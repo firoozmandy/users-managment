@@ -1,30 +1,45 @@
-export default class CompanyPresenter {
-  constructor(companies, setCompanies) {
-    this.companies = companies;
-    this.setCompanies = setCompanies;
+export default function CompanyPresenter(
+  companies,
+  setCompanies
+) {
+  return {
+
+
+add(values) {
+  const newCompany = {
+    id:
+      companies.length > 0
+        ? companies[
+            companies.length - 1
+          ].id + 1
+        : 1,
+
+    ...values,
   }
 
-  addCompany(company) {
-    const newId =Math.max(...this.companies.map(c => c.id), 0)+1;
-    this.setCompanies([
-      ...this.companies,
+  setCompanies([
+    ...companies,
+    newCompany,
+  ])
+},
 
-      {
-        id:newId,
-        ...company,
-      },
-    ]);
-  }
-
-  deleteCompany(id) {
-    this.setCompanies(this.companies.filter((company) => company.id !== id));
-  }
-
-  updateCompany(updatedCompany) {
-    this.setCompanies(
-      this.companies.map((company) =>
-        company.id === updatedCompany.id ? updatedCompany : company
+    update(updatedCompany) {
+      setCompanies(
+        companies.map(company =>
+          company.id ===
+          updatedCompany.id
+            ? updatedCompany
+            : company
+        )
       )
-    );
+    },
+
+    delete(id) {
+      setCompanies(
+        companies.filter(
+          company => company.id !== id
+        )
+      )
+    },
   }
 }

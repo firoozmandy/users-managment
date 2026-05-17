@@ -1,82 +1,110 @@
 import { useState } from 'react'
-import { Select, Card, List } from 'antd'
 
-import { initialUsers } from '../mock/users'
+import { Select, Card, List, Tag, Empty, Space, Typography } from 'antd'
+
+import useLocalStorage from '../../../hooks/useLocalStorage'
+
+import { initialUsers } from '../../users/mock/users'
+
 import { initialCompanies } from '../../companies/mock/companies'
+
 import { initialRoles } from '../../roles/mock/roles'
+
 import { initialPermissions } from '../../permissions/mock/permissions'
+
 import { initialPages } from '../../pages/mock/pages'
+
+const { Text } = Typography
 
 export default function AccessViewerPage() {
   const [selectedUserId, setSelectedUserId] = useState(null)
 
-  const selectedUser = initialUsers.find((user) => user.id === selectedUserId)
+  const [users] = useLocalStorage('users', initialUsers)
 
-  if (!selectedUser) {
-    return (
-      <>
-        <h2>Access Viewer</h2>
+  const [companies] = useLocalStorage('companies', initialCompanies)
 
+  const [roles] = useLocalStorage('roles', initialRoles)
+
+  const [permissions] = useLocalStorage('permissions', initialPermissions)
+
+  const [pages] = useLocalStorage('pages', initialPages)
+
+  const selectedUser = users.find((user) => user.id === selectedUserId)
+
+  const company = companies.find(
+    (company) => company.id === selectedUser?.companyId,
+  )
+
+  const role = roles.find((role) => role.id === selectedUser?.roleId)
+
+  const userPermissions = permissions.filter((permission) =>
+    role?.permissions?.includes(permission.id),
+  )
+
+  return (
+    <Card title="Access Viewer">
+      <Space direction="vertical" size="large" style={{ width: '100%' }}>
         <Select
-          style={{ width: 300 }}
           placeholder="Select User"
+          style={{ width: 300 }}
+          value={selectedUserId}
           onChange={setSelectedUserId}
         >
-          {initialUsers.map((user) => (
+          {users.map((user) => (
             <Select.Option key={user.id} value={user.id}>
               {user.name}
             </Select.Option>
           ))}
         </Select>
-      </>
-    )
-  }
 
-  const company = initialCompanies.find((c) => c.id === selectedUser.companyId)
+        {!selectedUser && <Empty description="Please select a user" />}
 
-  const role = initialRoles.find((r) => r.id === selectedUser.roleId)
+        {selectedUser && (
+          <>
+            <Card title="User Info">
+              <Space direction="vertical">
+                <Text>
+                  <strong>Name:</strong> {selectedUser.name}
+                </Text>
 
-  const permissions = initialPermissions.filter((permission) =>
-    role.permissions.includes(permission.id)
-  )
+                <Text>
+                  <strong>Email:</strong> {selectedUser.email}
+                </Text>
 
-  return (
-    <>
-      <h2>Access Viewer</h2>
+                <Text>
+                  <strong>Company:</strong> {company?.name}
+                </Text>
 
-      <Select
-        style={{ width: 300, marginBottom: 20 }}
-        value={selectedUserId}
-        onChange={setSelectedUserId}
-      >
-        {initialUsers.map((user) => (
-          <Select.Option key={user.id} value={user.id}>
-            {user.name}
-          </Select.Option>
-        ))}
-      </Select>
+                <Text>
+                  <strong>Role:</strong> <Tag color="blue">{role?.name}</Tag>
+                </Text>
+              </Space>
+            </Card>
 
-      <Card title="User Info">
-        <p>Name: {selectedUser.name}</p>
-        <p>Email: {selectedUser.email}</p>
-        <p>Company: {company?.name}</p>
-        <p>Role: {role?.name}</p>
-      </Card>
+            <Card title="Permissions">
+              <List
+                dataSource={userPermissions}
+                locale={{
+                  emptyText: 'No Permissions',
+                }}
+                renderItem={(permission) => {
+                  const page = pages.find((p) => p.id === permission.pageId)
 
-      <Card title="Permissions" style={{ marginTop: 20 }}>
-        <List
-          dataSource={permissions}
-          renderItem={(permission) => {
-            const page = initialPages.find((p) => p.id === permission.pageId)
+                  return (
+                    <List.Item>
+                      <Space>
+                        <Tag color="purple">{page?.name}</Tag>
 
-            return (
-              <List.Item>
-                {page?.name} — {permission.action}
-              </List.Item>
-            )
-          }}
-        />
-      </Card>
-    </>
+                        <Tag color="green">{permission.action}</Tag>
+                      </Space>
+                    </List.Item>
+                  )
+                }}
+              />
+            </Card>
+          </>
+        )}
+      </Space>
+    </Card>
   )
 }

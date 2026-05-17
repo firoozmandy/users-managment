@@ -1,115 +1,74 @@
-import { useState } from 'react'
-import { Table, Button, Modal, Form, Input, Space, Card, Row } from 'antd'
+import { Button } from 'antd'
 
-import { initialCompanies } from '../mock/companies'
 import CompanyPresenter from '../presenter/CompanyPresenter'
-import Title from 'antd/es/skeleton/Title'
+
+import useCrud from '../../../hooks/useCrud'
+
+import PageContainer from '../../../components/common/PageContainer'
+
+import DataTable from '../../../components/common/DataTable'
+
+import FormModal from '../../../components/common/FormModal'
+
+import ActionButtons from '../../../components/common/ActionButtons'
+
+import CompanyForm from '../../../components/forms/CompanyForm'
+import { initialCompanies } from '../mock/companies'
+import useLocalStorage from '../../../hooks/useLocalStorage'
 
 export default function CompaniesPage() {
-  const [companies, setCompanies] = useState(initialCompanies)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [editingCompany, setEditingCompany] = useState(null)
+  const [companies, setCompanies] = useLocalStorage(
+    'companies',
+    initialCompanies,
+  )
 
-  const [form] = Form.useForm()
+  const presenter = CompanyPresenter(companies, setCompanies)
 
-  const presenter = new CompanyPresenter(companies, setCompanies)
-
-  const openAddModal = () => {
-    setEditingCompany(null)
-    form.resetFields()
-    setIsModalOpen(true)
-  }
-
-  const openEditModal = (company) => {
-    setEditingCompany(company)
-    form.setFieldsValue(company)
-    setIsModalOpen(true)
-  }
-
-  const handleSubmit = (values) => {
-    if (editingCompany) {
-      presenter.updateCompany({
-        ...editingCompany,
-        ...values,
-      })
-    } else {
-      presenter.addCompany(values)
-    }
-
-    setIsModalOpen(false)
-    form.resetFields()
-  }
+  const crud = useCrud(presenter)
 
   const columns = [
     {
       title: 'ID',
       dataIndex: 'id',
-      render: (id) => id,
     },
+
     {
       title: 'Company Name',
       dataIndex: 'name',
     },
+
     {
       title: 'Actions',
-      render: (_, record) => (
-        <Space>
-          <Button onClick={() => openEditModal(record)}>Edit</Button>
 
-          <Button danger onClick={() => presenter.deleteCompany(record.id)}>
-            Delete
-          </Button>
-        </Space>
+      render: (_, record) => (
+        <ActionButtons
+          onEdit={() => crud.openEditModal(record)}
+          onDelete={() => presenter.delete(record.id)}
+        />
       ),
     },
   ]
 
   return (
     <>
-      <Row justify="space-between">
-        <Title level={3}>Companies</Title>
-        <Button
-          type="primary"
-          onClick={openAddModal}
-          style={{ marginBottom: 16 }}
-        >
-          Add Company
-        </Button>
-      </Row>
-
-      <Card title="Companies">
-        <Table
-          dataSource={companies}
-          columns={columns}
-          rowKey="id"
-          scroll={{ x: 800 }}
-        />
-      </Card>
-      <Modal
-        width={window.innerWidth < 768 ? '95%' : 700}
-        title={editingCompany ? 'Edit Company' : 'Add Company'}
-        open={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
-        footer={null}
-      >
-        <Form form={form} onFinish={handleSubmit} layout="vertical">
-          <Form.Item
-            name="name"
-            rules={[
-              {
-                required: true,
-                message: 'Enter company name',
-              },
-            ]}
-          >
-            <Input placeholder="Company Name" />
-          </Form.Item>
-
-          <Button htmlType="submit" type="primary">
-            Save
+      <PageContainer
+        title="Companies Management"
+        extra={
+          <Button type="primary" onClick={crud.openAddModal}>
+            Add Company
           </Button>
-        </Form>
-      </Modal>
+        }
+      >
+        <DataTable dataSource={companies} columns={columns} />
+      </PageContainer>
+
+      <FormModal
+        open={crud.isModalOpen}
+        onCancel={crud.closeModal}
+        title={crud.editingItem ? 'Edit Company' : 'Add Company'}
+      >
+        <CompanyForm form={crud.form} onFinish={crud.handleSubmit} />
+      </FormModal>
     </>
   )
 }

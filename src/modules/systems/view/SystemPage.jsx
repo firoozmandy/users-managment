@@ -1,109 +1,70 @@
-import { useState } from 'react'
+import { Button } from 'antd'
+
 import { initialSystems } from '../mock/system'
-import { Button, Card, Form, Input, Modal, Space, Table } from 'antd'
 import SystemPresenter from '../presenter/SystemPresenter'
 
+import useCrud from '../../../hooks/useCrud'
+
+import PageContainer from '../../../components/common/PageContainer'
+import DataTable from '../../../components/common/DataTable'
+import FormModal from '../../../components/common/FormModal'
+import ActionButtons from '../../../components/common/ActionButtons'
+import SystemForm from '../../../components/forms/SystemForm'
+import useLocalStorage from '../../../hooks/useLocalStorage'
+
+
 export default function SystemsPage() {
-  const [systems, setSystems] = useState(initialSystems)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [editingSystem, setEditingSystem] = useState(null)
-
-  const [form] = Form.useForm()
-
+const [systems, setSystems] = useLocalStorage(
+  'systems',
+  initialSystems
+)
   const presenter = SystemPresenter(systems, setSystems)
 
-  const openAddModal = () => {
-    setEditingSystem(null)
-    form.resetFields()
-    setIsModalOpen(true)
-  }
-
-  const openEditModal = (system) => {
-    setEditingSystem(system)
-    form.setFieldsValue(system)
-    setIsModalOpen(true)
-  }
-
-  const handleSubmit = (values) => {
-    if (editingSystem) {
-      presenter.updateSystem({
-        ...editingSystem,
-        ...values,
-      })
-    } else {
-      presenter.addSystem(values)
-    }
-
-    setIsModalOpen(false)
-    form.resetFields()
-  }
+  const crud = useCrud(presenter)
 
   const columns = [
     {
       title: 'ID',
       dataIndex: 'id',
-      render: (id) => id,
     },
+
     {
       title: 'System Name',
       dataIndex: 'name',
     },
+
     {
       title: 'Actions',
-      render: (_, record) => (
-        <Space>
-          <Button onClick={() => openEditModal(record)}>Edit</Button>
 
-          <Button danger onClick={() => presenter.deleteSystem(record.id)}>
-            Delete
-          </Button>
-        </Space>
+      render: (_, record) => (
+        <ActionButtons
+          onEdit={() => crud.openEditModal(record)}
+          onDelete={() => presenter.delete(record.id)}
+        />
       ),
     },
   ]
 
   return (
     <>
-      <Button
-        type="primary"
-        onClick={openAddModal}
-        style={{ marginBottom: 16 }}
-      >
-        Add System
-      </Button>
-      <Card title="Companies">
-        <Table
-          dataSource={systems}
-          columns={columns}
-          rowKey="id"
-          scroll={{ x: 800 }}
-        />
-      </Card>
-      <Modal
-        width={window.innerWidth < 768 ? '95%' : 700}
-        title={editingSystem ? 'Edit System' : 'Add System'}
-        open={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
-        footer={null}
-      >
-        <Form form={form} onFinish={handleSubmit} layout="vertical">
-          <Form.Item
-            name="name"
-            rules={[
-              {
-                required: true,
-                message: 'Enter system name',
-              },
-            ]}
-          >
-            <Input placeholder="System Name" />
-          </Form.Item>
-
-          <Button htmlType="submit" type="primary">
-            Save
+      <PageContainer
+        title="Systems Management"
+        extra={
+          <Button type="primary" onClick={crud.openAddModal}>
+            Add System
           </Button>
-        </Form>
-      </Modal>
+        }
+      >
+        <DataTable dataSource={systems} columns={columns} />
+      </PageContainer>
+
+      <FormModal
+        open={crud.isModalOpen}
+        onCancel={crud.closeModal}
+        title={crud.editingItem ? 'Edit System' : 'Add System'}
+      >
+        <SystemForm form={crud.form} onFinish={crud.handleSubmit} />
+      </FormModal>
     </>
   )
 }
